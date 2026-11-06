@@ -19,14 +19,10 @@ Painel que coleta estudos de biologia espacial do **NASA Open Science Data Repos
 4. No `index.html`, trocar `COLE_AQUI_A_URL_DO_PROJETO` e `COLE_AQUI_A_PUBLISHABLE_KEY` pela URL e pela publishable/anon key.
 5. Em Settings → Pages, ativar a publicação a partir de `main` / `/ (root)`.
 
-## Divisão de responsabilidades
+## iNTEGRANTES
 
-| Integrante | Responsabilidade |
+| Integrante |
 |---|---|
-| (preencher) | (preencher) |
+| (Julia) | (Eduarda) (Ana) |
 
-## Documentação
 
-- `docs/tutorial.pdf`: tutorial do projeto
-- `docs/apresentacao.pdf`: slides do seminário
-- `docs/ai-interaction.md` e `docs/reflexao.md`: registro do uso de IA
