@@ -1,0 +1,34 @@
+name: Atualizar dados OSDR
+
+on:
+  schedule:
+    - cron: "0 6 * * *"   # todo dia às 06:00 UTC
+  workflow_dispatch:       # execução manual pelo botão "Run workflow"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: atualizar-osdr
+  cancel-in-progress: false
+
+jobs:
+  coletar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Instalar dependências
+        run: pip install requests
+
+      - name: Rodar o robô coletor
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+          OSDR_TERM: ""
+        run: python scripts/fetch_nasa.py
