@@ -5,43 +5,283 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Painel OSDR: Grupo 10</title>
   <style>
-    :root { --fundo: #f5f7fb; --texto: #1d2433; --card: #ffffff; --borda: #d9dfeb; --destaque: #2b6cb0; }
-    @media (prefers-color-scheme: dark) {
-      :root { --fundo: #0f1420; --texto: #e6eaf2; --card: #171e2e; --borda: #2a3450; --destaque: #63a4ff; }
+    :root {
+      --fundo: #0b0618;
+      --fundo2: #1a0b33;
+      --painel: #1d0f3a;
+      --texto: #f1ecff;
+      --texto-suave: #b9aedb;
+      --card: rgba(30, 16, 58, .72);
+      --borda: #3b2670;
+      --rosa: #ff4fa8;
+      --verde: #39ffa0;
+      --pele: #39ffa0;
+      --olho: #0b0618;
+      --brilho-rosa: rgba(255, 79, 168, .35);
+      --brilho-verde: rgba(57, 255, 160, .35);
+    }
+    @media (prefers-color-scheme: light) {
+      :root {
+        --fundo: #fff4fa;
+        --fundo2: #e9fff4;
+        --painel: #ffffff;
+        --texto: #2a1442;
+        --texto-suave: #6b5a85;
+        --card: rgba(255, 255, 255, .85);
+        --borda: #f2b6d6;
+        --rosa: #d6237f;
+        --verde: #0c9e5c;
+        --pele: #5be0a0;
+        --olho: #2a1442;
+        --brilho-rosa: rgba(214, 35, 127, .22);
+        --brilho-verde: rgba(12, 158, 92, .22);
+      }
     }
     * { box-sizing: border-box; }
-    body { margin: 0; padding: 16px; font-family: system-ui, sans-serif; background: var(--fundo); color: var(--texto); }
-    h1 { font-size: 1.5rem; margin: 0 0 4px; }
-    .atualizacao { font-size: .9rem; opacity: .75; margin-bottom: 16px; }
-    .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin-bottom: 16px; }
-    .stat, .card { background: var(--card); border: 1px solid var(--borda); border-radius: 10px; padding: 12px; }
-    .stat strong { display: block; font-size: 1.5rem; color: var(--destaque); }
-    .filtros { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
-    .filtros input, .filtros select { flex: 1 1 180px; padding: 8px; border-radius: 6px; border: 1px solid var(--borda); background: var(--card); color: var(--texto); }
-    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 12px; }
-    .card h3 { font-size: 1rem; margin: 0 0 8px; }
-    .card p { margin: 4px 0; font-size: .9rem; }
-    .card a { color: var(--destaque); }
-    .aviso { padding: 12px; }
+    html { background: var(--fundo); }
+    body {
+      margin: 0; padding: 16px 16px 48px; min-height: 100vh;
+      font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+      color: var(--texto);
+      background:
+        radial-gradient(ellipse at 15% 0%, var(--brilho-rosa), transparent 50%),
+        radial-gradient(ellipse at 90% 10%, var(--brilho-verde), transparent 45%),
+        linear-gradient(180deg, var(--fundo), var(--fundo2));
+      background-attachment: fixed;
+      position: relative;
+    }
+    /* campo de estrelas */
+    body::before {
+      content: ""; position: fixed; inset: 0; pointer-events: none; z-index: 0; opacity: .7;
+      background-image:
+        radial-gradient(1.5px 1.5px at 12% 22%, var(--verde), transparent),
+        radial-gradient(1.5px 1.5px at 28% 68%, var(--rosa), transparent),
+        radial-gradient(1px 1px at 44% 12%, #fff, transparent),
+        radial-gradient(1.5px 1.5px at 63% 40%, var(--verde), transparent),
+        radial-gradient(1px 1px at 78% 78%, #fff, transparent),
+        radial-gradient(1.5px 1.5px at 90% 30%, var(--rosa), transparent),
+        radial-gradient(1px 1px at 8% 88%, #fff, transparent),
+        radial-gradient(1px 1px at 55% 92%, var(--rosa), transparent);
+      background-size: 380px 380px;
+      animation: cintilar 6s ease-in-out infinite alternate;
+    }
+    @keyframes cintilar { from { opacity: .35; } to { opacity: .8; } }
+    @keyframes flutuar { 0%,100% { transform: translateY(0) rotate(-3deg); } 50% { transform: translateY(-8px) rotate(3deg); } }
+    @keyframes orbitar { to { transform: rotate(360deg); } }
+    @media (prefers-reduced-motion: reduce) {
+      body::before, .heroi svg, .orbita { animation: none !important; }
+    }
+
+    main { position: relative; z-index: 1; max-width: 1200px; margin: 0 auto; }
+
+    /* cabeçalho */
+    .heroi { display: flex; align-items: center; gap: 16px; padding: 8px 0 12px; }
+    .heroi .gato-wrap { position: relative; width: 84px; height: 84px; flex: none; }
+    .heroi svg { width: 84px; height: 84px; color: var(--pele); filter: drop-shadow(0 0 10px var(--brilho-verde)); animation: flutuar 5s ease-in-out infinite; }
+    .orbita { position: absolute; inset: -8px; border: 1px dashed var(--rosa); border-radius: 50%; animation: orbitar 14s linear infinite; opacity: .7; }
+    .orbita::after { content: ""; position: absolute; top: -5px; left: 50%; width: 10px; height: 10px; border-radius: 50%; background: var(--rosa); box-shadow: 0 0 10px var(--rosa); }
+    h1 {
+      font-size: clamp(1.4rem, 4.5vw, 2.3rem); margin: 0 0 4px; line-height: 1.15; letter-spacing: -.01em;
+      background: linear-gradient(90deg, var(--rosa), var(--verde));
+      -webkit-background-clip: text; background-clip: text; color: transparent;
+    }
+    .atualizacao {
+      display: inline-block; font-size: .85rem; color: var(--texto-suave);
+      font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+      border: 1px solid var(--borda); background: var(--card); padding: 4px 10px; border-radius: 999px;
+    }
+    .atualizacao::before { content: "● "; color: var(--verde); }
+
+    /* estatísticas */
+    .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin: 12px 0 16px; }
+    .stat, .card {
+      background: var(--card); border: 1px solid var(--borda); border-radius: 14px; padding: 14px;
+      backdrop-filter: blur(6px);
+    }
+    .stat { position: relative; overflow: hidden; }
+    .stat span { font-size: .8rem; text-transform: uppercase; letter-spacing: .08em; color: var(--texto-suave); }
+    .stat strong { display: block; font-size: 2rem; line-height: 1.2; color: var(--rosa); text-shadow: 0 0 14px var(--brilho-rosa); }
+    .stat:nth-child(2) strong { color: var(--verde); text-shadow: 0 0 14px var(--brilho-verde); }
+    .stat::after { content: ""; position: absolute; right: -18px; bottom: -18px; width: 64px; height: 64px; border-radius: 50%; border: 2px solid var(--borda); }
+
+    /* filtros */
+    .filtros { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 18px; }
+    .filtros input, .filtros select {
+      flex: 1 1 180px; padding: 10px 12px; border-radius: 10px; font: inherit; font-size: .95rem;
+      border: 1px solid var(--borda); background: var(--card); color: var(--texto);
+    }
+    .filtros input:focus, .filtros select:focus { outline: none; border-color: var(--verde); box-shadow: 0 0 0 3px var(--brilho-verde); }
+    .filtros input::placeholder { color: var(--texto-suave); }
+
+    /* menus de escolha (organismo e tipo de projeto) */
+    .dropdown { position: relative; flex: 1 1 220px; min-width: 0; max-width: 100%; }
+    .dropdown.aberto { z-index: 30; }
+    .dd-btn {
+      width: 100%; display: flex; align-items: center; justify-content: space-between; gap: 8px;
+      padding: 10px 12px; min-height: 44px; border-radius: 10px; font: inherit; font-size: .95rem; text-align: left;
+      border: 1px solid var(--borda); background: var(--card); color: var(--texto); cursor: pointer;
+    }
+    .dd-rotulo { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .dd-seta { color: var(--rosa); transition: transform .2s; }
+    .dropdown.aberto .dd-seta { transform: rotate(180deg); }
+    .dropdown.ativo .dd-btn { border-color: var(--rosa); box-shadow: 0 0 0 2px var(--brilho-rosa); }
+    .dd-btn:focus-visible, .dropdown.aberto .dd-btn { outline: none; border-color: var(--verde); box-shadow: 0 0 0 3px var(--brilho-verde); }
+    .dd-painel {
+      position: absolute; top: calc(100% + 6px); left: 0; z-index: 30;
+      width: max(100%, 280px); max-width: min(440px, calc(100vw - 32px));
+      background: var(--painel); border: 1px solid var(--verde); border-radius: 12px; padding: 8px;
+      box-shadow: 0 14px 34px rgba(0, 0, 0, .45), 0 0 18px var(--brilho-verde);
+    }
+    .dd-painel[hidden] { display: none; }
+    .filtros .dd-busca { width: 100%; flex: none; min-height: 40px; margin-bottom: 6px; padding: 8px 10px; font-size: 1rem; }
+    .dd-lista { list-style: none; margin: 0; padding: 0; max-height: min(50vh, 280px); overflow-y: auto; overscroll-behavior: contain; }
+    .dd-lista li {
+      padding: 10px 10px; border-radius: 8px; cursor: pointer; font-size: .92rem; line-height: 1.3;
+      color: var(--texto); overflow-wrap: anywhere;
+    }
+    .dd-lista li:hover, .dd-lista li:focus { outline: none; background: var(--brilho-rosa); }
+    .dd-lista li.sel { color: var(--verde); font-weight: 600; }
+    .dd-lista li.sel::after { content: " ✓"; }
+    .dd-lista li.vazio { cursor: default; color: var(--texto-suave); }
+    .dd-lista li.vazio:hover { background: none; }
+
+    /* cartões */
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 270px), 1fr)); gap: 14px; }
+    .card { position: relative; transition: transform .2s, box-shadow .2s, border-color .2s; }
+    .card:hover { transform: translateY(-3px); border-color: var(--rosa); box-shadow: 0 8px 26px var(--brilho-rosa); }
+    .grid .card:nth-child(even):hover { border-color: var(--verde); box-shadow: 0 8px 26px var(--brilho-verde); }
+    .card .gatinho { position: absolute; top: 10px; right: 10px; width: 30px; height: 30px; color: var(--pele); opacity: .85; }
+    .grid .card:nth-child(odd) .gatinho { color: var(--rosa); }
+    .card h3 { font-size: 1rem; margin: 0 0 10px; padding-right: 36px; line-height: 1.35; }
+    .card h3 .acc {
+      font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: .85em;
+      color: var(--verde); margin-right: 2px;
+    }
+    .card p { margin: 5px 0; font-size: .9rem; color: var(--texto); }
+    .card p strong { color: var(--rosa); font-weight: 600; }
+    .card a {
+      display: inline-block; margin-top: 4px; color: var(--verde); font-weight: 600; text-decoration: none;
+      border-bottom: 1px dashed var(--verde);
+    }
+    .card a:hover { color: var(--rosa); border-color: var(--rosa); }
+    .card a::after { content: " ↗"; }
+    /* apresentação do projeto */
+    .projeto { margin: 8px 0 16px; border-left: 4px solid var(--rosa); }
+    .projeto h2 { margin: 0 0 8px; font-size: 1.15rem; color: var(--verde); }
+    .projeto p { margin: 0 0 12px; font-size: .95rem; line-height: 1.55; color: var(--texto); }
+    .projeto p strong { color: var(--rosa); }
+    .etapas { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 0; padding: 0; list-style: none; }
+    .etapas li {
+      font-size: .8rem; font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+      padding: 5px 10px; border-radius: 999px; border: 1px solid var(--verde); color: var(--verde);
+    }
+    .etapas li:nth-child(even) { border-color: var(--rosa); color: var(--rosa); }
+    .etapas li + li::before { content: none; }
+    .etapas .seta { border: 0; padding: 0; color: var(--texto-suave); }
+    .aviso { padding: 18px; text-align: center; grid-column: 1 / -1; }
+    .aviso svg { width: 56px; height: 56px; color: var(--pele); display: block; margin: 0 auto 8px; }
+
+    /* ---------- responsividade ---------- */
+    img, svg { max-width: 100%; }
+    .card, .atualizacao, h1 { overflow-wrap: anywhere; }
+    body { padding-left: max(16px, env(safe-area-inset-left)); padding-right: max(16px, env(safe-area-inset-right)); }
+
+    /* telas sem mouse: sem efeito de hover que "gruda" ao tocar */
+    @media (hover: none) {
+      .card:hover, .grid .card:nth-child(even):hover { transform: none; box-shadow: none; border-color: var(--borda); }
+    }
+
+    /* tablets e celulares grandes */
+    @media (max-width: 720px) {
+      body { padding-top: 12px; padding-bottom: 32px; }
+      .heroi { gap: 12px; }
+      .heroi .gato-wrap, .heroi svg { width: 64px; height: 64px; }
+      .stats { gap: 8px; }
+      .stat { padding: 10px; }
+      .stat span { font-size: .7rem; letter-spacing: .04em; }
+      .stat strong { font-size: 1.5rem; }
+      .stat::after { display: none; }
+      .filtros input, .filtros select { flex: 1 1 100%; font-size: 1rem; min-height: 44px; }
+      .projeto p { font-size: .9rem; }
+    }
+
+    /* celulares */
+    @media (max-width: 480px) {
+      .heroi { flex-direction: column; text-align: center; }
+      .stats { grid-template-columns: 1fr 1fr; }
+      .stats .stat:last-child { grid-column: 1 / -1; }
+      .grid { grid-template-columns: 1fr; }
+      .etapas { justify-content: center; gap: 6px; }
+      .etapas li { font-size: .72rem; padding: 4px 8px; }
+      .card a { padding: 6px 0; }
+    }
+
+    /* telas muito grandes */
+    @media (min-width: 1400px) {
+      main { max-width: 1360px; }
+    }
   </style>
 </head>
 <body>
-  <h1>Painel OSDR: estudos de biologia espacial</h1>
-  <div class="atualizacao" id="atualizacao">Carregando...</div>
+  <!-- ícone reutilizável: gato alienígena -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <symbol id="gato" viewBox="0 0 64 64">
+      <g stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none">
+        <path d="M27 19 Q24 9 19 6"/>
+        <path d="M37 19 Q40 9 45 6"/>
+      </g>
+      <circle cx="19" cy="6" r="3" fill="var(--rosa)"/>
+      <circle cx="45" cy="6" r="3" fill="var(--rosa)"/>
+      <path d="M9 32 L13 13 L26 21 Q32 19 38 21 L51 13 L55 32 Q57 52 32 56 Q7 52 9 32Z" fill="currentColor"/>
+      <path d="M15 19 L21 23 L16 28Z M49 19 L43 23 L48 28Z" fill="var(--rosa)" opacity=".8"/>
+      <ellipse cx="22" cy="35" rx="7" ry="4.5" transform="rotate(25 22 35)" fill="var(--olho)"/>
+      <ellipse cx="42" cy="35" rx="7" ry="4.5" transform="rotate(-25 42 35)" fill="var(--olho)"/>
+      <ellipse cx="22.5" cy="35" rx="1.3" ry="3.6" transform="rotate(25 22.5 35)" fill="var(--rosa)"/>
+      <ellipse cx="41.5" cy="35" rx="1.3" ry="3.6" transform="rotate(-25 41.5 35)" fill="var(--rosa)"/>
+      <path d="M30 43 L34 43 L32 46Z" fill="var(--rosa)"/>
+      <path d="M32 46 Q28 50 25 48 M32 46 Q36 50 39 48" stroke="var(--olho)" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+      <path d="M12 42 L3 40 M12 46 L4 48 M52 42 L61 40 M52 46 L60 48" stroke="var(--olho)" stroke-width="1.2" stroke-linecap="round" opacity=".7"/>
+    </symbol>
+  </svg>
 
-  <div class="stats">
-    <div class="stat"><span>Estudos</span><strong id="total">0</strong></div>
-    <div class="stat"><span>Organismos</span><strong id="organismos">0</strong></div>
-    <div class="stat"><span>Tipos de projeto</span><strong id="tipos">0</strong></div>
-  </div>
+  <main>
+    <header class="heroi">
+      <div class="gato-wrap">
+        <div class="orbita"></div>
+        <svg viewBox="0 0 64 64" role="img" aria-label="Gato alienígena"><use href="#gato"/></svg>
+      </div>
+      <div>
+        <h1>Painel OSDR: estudos de biologia espacial</h1>
+        <div class="atualizacao" id="atualizacao">Carregando...</div>
+      </div>
+    </header>
 
-  <div class="filtros">
-    <input type="search" id="busca" placeholder="Buscar por título, accession ou missão">
-    <select id="filtroOrganismo"><option value="">Todos os organismos</option></select>
-    <select id="filtroTipo"><option value="">Todos os tipos de projeto</option></select>
-  </div>
+    <section class="card projeto" aria-labelledby="sobre">
+      <h2 id="sobre">Sobre o projeto</h2>
+      <p>O <strong>OSDR</strong> (Open Science Data Repository) é o repositório aberto da NASA com dados de experimentos de <strong>biologia espacial</strong>: estudos sobre como plantas, animais, microrganismos e células reagem a voos espaciais e à microgravidade. Cada estudo recebe um código de identificação (<em>accession</em>) e pode ser consultado por uma API pública.</p>
+      <p>Este projeto, do <strong>Grupo 10</strong>, monta um <strong>pipeline de dados</strong> automatizado: coleta os estudos pela API do OSDR, guarda tudo em um banco de dados e exibe os resultados neste painel, que você pode explorar com a busca e os filtros abaixo.</p>
+      <ul class="etapas" aria-label="Etapas do pipeline">
+        <li>API OSDR</li><li class="seta">→</li>
+        <li>GitHub Actions</li><li class="seta">→</li>
+        <li>Supabase</li><li class="seta">→</li>
+        <li>GitHub Pages</li>
+      </ul>
+    </section>
 
-  <div class="grid" id="lista"></div>
+    <div class="stats">
+      <div class="stat"><span>Estudos</span><strong id="total">0</strong></div>
+      <div class="stat"><span>Organismos</span><strong id="organismos">0</strong></div>
+      <div class="stat"><span>Tipos de projeto</span><strong id="tipos">0</strong></div>
+    </div>
+
+    <div class="filtros">
+      <input type="search" id="busca" placeholder="Buscar por título, accession ou missão">
+      <div class="dropdown" id="filtroOrganismo" data-todos="Todos os organismos"></div>
+      <div class="dropdown" id="filtroTipo" data-todos="Todos os tipos de projeto"></div>
+    </div>
+
+    <div class="grid" id="lista"></div>
+  </main>
 
   <script>
     // Configure com a URL do projeto e a publishable/anon key (nunca a secret).
@@ -51,6 +291,8 @@
     const cabecalhos = { apikey: SUPABASE_KEY, Authorization: `Bearer ${SUPABASE_KEY}` };
     let estudos = [];
 
+    const ICONE_GATO = (classe) => `<svg class="${classe}" viewBox="0 0 64 64" aria-hidden="true"><use href="#gato"/></svg>`;
+
     // Escapa qualquer texto vindo de fora antes de inserir no HTML
     function escapeHtml(valor) {
       return String(valor ?? "").replace(/[&<>"']/g, c => ({
@@ -58,20 +300,91 @@
       }[c]));
     }
 
-    function preencherFiltro(id, valores) {
-      const select = document.getElementById(id);
-      [...new Set(valores.filter(Boolean))].sort().forEach(v => {
-        const opt = document.createElement("option");
-        opt.value = v;
-        opt.textContent = v;
-        select.appendChild(opt);
+    // Menu de escolha próprio: lista rolável, busca interna e rótulo que não estoura a largura
+    function criarDropdown(id, aoMudar) {
+      const raiz = document.getElementById(id);
+      const todos = raiz.dataset.todos;
+      raiz.innerHTML = `
+        <button type="button" class="dd-btn" aria-haspopup="listbox" aria-expanded="false">
+          <span class="dd-rotulo"></span><span class="dd-seta" aria-hidden="true">▾</span>
+        </button>
+        <div class="dd-painel" hidden>
+          <input type="search" class="dd-busca" placeholder="Filtrar lista..." aria-label="Filtrar opções">
+          <ul class="dd-lista" role="listbox"></ul>
+        </div>`;
+      const botao = raiz.querySelector(".dd-btn");
+      const rotulo = raiz.querySelector(".dd-rotulo");
+      const painel = raiz.querySelector(".dd-painel");
+      const busca = raiz.querySelector(".dd-busca");
+      const lista = raiz.querySelector(".dd-lista");
+      const api = { valor: "", opcoes: [] };
+      rotulo.textContent = todos;
+
+      function desenharLista() {
+        const t = busca.value.toLowerCase();
+        const itens = api.opcoes.filter(v => v.toLowerCase().includes(t));
+        const opcoes = (t ? [] : [""]).concat(itens);
+        lista.innerHTML = opcoes.map(v => `
+          <li role="option" tabindex="0" data-valor="${escapeHtml(v)}" aria-selected="${v === api.valor}"
+              class="${v === api.valor ? "sel" : ""}">${escapeHtml(v || todos)}</li>`).join("")
+          || `<li class="vazio">Nada encontrado</li>`;
+      }
+      function abrir() {
+        busca.value = "";
+        busca.style.display = api.opcoes.length > 8 ? "" : "none";
+        desenharLista();
+        painel.hidden = false;
+        raiz.classList.add("aberto");
+        botao.setAttribute("aria-expanded", "true");
+        lista.querySelector(".sel")?.scrollIntoView({ block: "nearest" });
+        // só foca na busca quando há mouse (evita abrir o teclado no celular)
+        if (api.opcoes.length > 8 && matchMedia("(hover: hover)").matches) busca.focus();
+      }
+      function fechar() {
+        painel.hidden = true;
+        raiz.classList.remove("aberto");
+        botao.setAttribute("aria-expanded", "false");
+      }
+      function escolher(v) {
+        api.valor = v;
+        rotulo.textContent = v || todos;
+        botao.title = v || "";
+        raiz.classList.toggle("ativo", Boolean(v));
+        fechar();
+        botao.focus();
+        aoMudar();
+      }
+
+      botao.addEventListener("click", () => painel.hidden ? abrir() : fechar());
+      busca.addEventListener("input", desenharLista);
+      lista.addEventListener("click", e => {
+        const li = e.target.closest("li[data-valor]");
+        if (li) escolher(li.dataset.valor);
       });
+      lista.addEventListener("keydown", e => {
+        const li = e.target.closest("li[data-valor]");
+        if (!li) return;
+        if (e.key === "Enter" || e.key === " ") { e.preventDefault(); escolher(li.dataset.valor); }
+        if (e.key === "ArrowDown") { e.preventDefault(); (li.nextElementSibling || li).focus(); }
+        if (e.key === "ArrowUp") { e.preventDefault(); (li.previousElementSibling || li).focus(); }
+      });
+      raiz.addEventListener("keydown", e => {
+        if (e.key === "Escape") { fechar(); botao.focus(); }
+        if (e.key === "ArrowDown" && e.target === busca) { e.preventDefault(); lista.querySelector("li")?.focus(); }
+      });
+      document.addEventListener("click", e => { if (!raiz.contains(e.target)) fechar(); });
+
+      api.definirOpcoes = valores => { api.opcoes = [...new Set(valores.filter(Boolean))].sort(); };
+      return api;
     }
+
+    const filtroOrganismo = criarDropdown("filtroOrganismo", () => desenhar());
+    const filtroTipo = criarDropdown("filtroTipo", () => desenhar());
 
     function desenhar() {
       const termo = document.getElementById("busca").value.toLowerCase();
-      const org = document.getElementById("filtroOrganismo").value;
-      const tipo = document.getElementById("filtroTipo").value;
+      const org = filtroOrganismo.valor;
+      const tipo = filtroTipo.valor;
 
       const filtrados = estudos.filter(e =>
         (!org || e.organismo === org) &&
@@ -81,13 +394,14 @@
 
       document.getElementById("lista").innerHTML = filtrados.map(e => `
         <article class="card">
-          <h3>${escapeHtml(e.accession)}: ${escapeHtml(e.titulo)}</h3>
+          ${ICONE_GATO("gatinho")}
+          <h3><span class="acc">${escapeHtml(e.accession)}:</span> ${escapeHtml(e.titulo)}</h3>
           <p><strong>Organismo:</strong> ${escapeHtml(e.organismo)}</p>
           <p><strong>Projeto:</strong> ${escapeHtml(e.tipo_projeto)}</p>
           <p><strong>Missão:</strong> ${escapeHtml(e.missao || "não informada")}</p>
           <p><strong>Publicação:</strong> ${escapeHtml(e.data_publicacao)}</p>
           ${e.url ? `<p><a href="${escapeHtml(e.url)}" target="_blank" rel="noopener">Ver estudo na OSDR</a></p>` : ""}
-        </article>`).join("") || `<div class="card aviso">Nenhum estudo encontrado.</div>`;
+        </article>`).join("") || `<div class="card aviso">${ICONE_GATO("")}Nenhum estudo encontrado.</div>`;
     }
 
     async function carregar() {
@@ -108,16 +422,15 @@
         document.getElementById("organismos").textContent = new Set(estudos.map(e => e.organismo).filter(Boolean)).size;
         document.getElementById("tipos").textContent = new Set(estudos.map(e => e.tipo_projeto).filter(Boolean)).size;
 
-        preencherFiltro("filtroOrganismo", estudos.map(e => e.organismo));
-        preencherFiltro("filtroTipo", estudos.map(e => e.tipo_projeto));
+        filtroOrganismo.definirOpcoes(estudos.map(e => e.organismo));
+        filtroTipo.definirOpcoes(estudos.map(e => e.tipo_projeto));
         desenhar();
       } catch (erro) {
-        document.getElementById("lista").innerHTML = `<div class="card aviso">Erro ao carregar os dados: ${escapeHtml(erro.message)}</div>`;
+        document.getElementById("lista").innerHTML = `<div class="card aviso">${ICONE_GATO("")}Erro ao carregar os dados: ${escapeHtml(erro.message)}</div>`;
       }
     }
 
-    ["busca", "filtroOrganismo", "filtroTipo"].forEach(id =>
-      document.getElementById(id).addEventListener("input", desenhar));
+    document.getElementById("busca").addEventListener("input", desenhar);
     carregar();
   </script>
 </body>
