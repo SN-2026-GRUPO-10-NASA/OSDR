@@ -77,6 +77,21 @@ def data_epoch(valor):
     return datetime.fromtimestamp(numero, timezone.utc).date().isoformat()
 
 
+FORMATOS_DATA = ["%m/%d/%Y", "%m/%d/%y", "%d-%b-%Y", "%Y-%m-%d"]
+
+
+def data_texto(valor):
+    """Converte datas em texto (vários formatos) para ISO. Retorna None se não reconhecer."""
+    if not valor:
+        return None
+    for formato in FORMATOS_DATA:
+        try:
+            return datetime.strptime(valor.strip(), formato).date().isoformat()
+        except ValueError:
+            continue
+    return None
+
+
 def normalizar(item):
     """Transforma um registro bruto da API nas colunas da tabela."""
     accession = item.get("Accession")
@@ -93,8 +108,8 @@ def normalizar(item):
         "tipo_material": item.get("Material Type"),
         "tipo_projeto": item.get("Project Type"),
         "missao": missao.get("Name"),
-        "missao_inicio": missao.get("Start Date"),
-        "missao_fim": missao.get("End Date"),
+        "missao_inicio": data_texto(missao.get("Start Date")),
+        "missao_fim": data_texto(missao.get("End Date")),
         "tecnologia_ensaio": item.get("Study Assay Technology Type"),
         "tipo_medicao": item.get("Study Assay Measurement Type"),
         "data_publicacao": data_epoch(item.get("Study Public Release Date")),
@@ -114,7 +129,9 @@ def gravar_lote(url, chave, lote):
         data=json.dumps(lote),
         timeout=TIMEOUT,
     )
-    resposta.raise_for_status()
+    if not resposta.ok:
+        # Mostra o motivo que o Supabase devolveu, não só o código HTTP
+        raise RuntimeError(f"{resposta.status_code} {resposta.text[:300]}")
 
 
 def main():
