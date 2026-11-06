@@ -25,4 +25,11 @@ Painel que coleta estudos de biologia espacial do **NASA Open Science Data Repos
 |---|---|
 | (Julia) | (Eduarda) (Ana) |
 
+## Links do Projeto
+
+Link do SupaBase: https://gbwgwmaxzcqchbiwcpvj.supabase.co
+Link do Pages: https://sn-2026-grupo-10-nasa.github.io/OSDR/
+Link da API: https://osdr.nasa.gov/bio/repo/search?q=&data_source=cgene,alsda,esa&data_type=study
+
+
 
