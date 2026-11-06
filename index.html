@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Painel OSDR: Grupo 10</title>
+  <style>
+    :root { --fundo: #f5f7fb; --texto: #1d2433; --card: #ffffff; --borda: #d9dfeb; --destaque: #2b6cb0; }
+    @media (prefers-color-scheme: dark) {
+      :root { --fundo: #0f1420; --texto: #e6eaf2; --card: #171e2e; --borda: #2a3450; --destaque: #63a4ff; }
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; padding: 16px; font-family: system-ui, sans-serif; background: var(--fundo); color: var(--texto); }
+    h1 { font-size: 1.5rem; margin: 0 0 4px; }
+    .atualizacao { font-size: .9rem; opacity: .75; margin-bottom: 16px; }
+    .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin-bottom: 16px; }
+    .stat, .card { background: var(--card); border: 1px solid var(--borda); border-radius: 10px; padding: 12px; }
+    .stat strong { display: block; font-size: 1.5rem; color: var(--destaque); }
+    .filtros { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
+    .filtros input, .filtros select { flex: 1 1 180px; padding: 8px; border-radius: 6px; border: 1px solid var(--borda); background: var(--card); color: var(--texto); }
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 12px; }
+    .card h3 { font-size: 1rem; margin: 0 0 8px; }
+    .card p { margin: 4px 0; font-size: .9rem; }
+    .card a { color: var(--destaque); }
+    .aviso { padding: 12px; }
+  </style>
+</head>
+<body>
+  <h1>Painel OSDR: estudos de biologia espacial</h1>
+  <div class="atualizacao" id="atualizacao">Carregando...</div>
+
+  <div class="stats">
+    <div class="stat"><span>Estudos</span><strong id="total">0</strong></div>
+    <div class="stat"><span>Organismos</span><strong id="organismos">0</strong></div>
+    <div class="stat"><span>Tipos de projeto</span><strong id="tipos">0</strong></div>
+  </div>
+
+  <div class="filtros">
+    <input type="search" id="busca" placeholder="Buscar por título, accession ou missão">
+    <select id="filtroOrganismo"><option value="">Todos os organismos</option></select>
+    <select id="filtroTipo"><option value="">Todos os tipos de projeto</option></select>
+  </div>
+
+  <div class="grid" id="lista"></div>
+
+  <script>
+    // Configure com a URL do projeto e a publishable/anon key (nunca a secret).
+    const SUPABASE_URL = "COLE_AQUI_A_URL_DO_PROJETO";
+    const SUPABASE_KEY = "COLE_AQUI_A_PUBLISHABLE_KEY";
+
+    const cabecalhos = { apikey: SUPABASE_KEY, Authorization: `Bearer ${SUPABASE_KEY}` };
+    let estudos = [];
+
+    // Escapa qualquer texto vindo de fora antes de inserir no HTML
+    function escapeHtml(valor) {
+      return String(valor ?? "").replace(/[&<>"']/g, c => ({
+        "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
+      }[c]));
+    }
+
+    function preencherFiltro(id, valores) {
+      const select = document.getElementById(id);
+      [...new Set(valores.filter(Boolean))].sort().forEach(v => {
+        const opt = document.createElement("option");
+        opt.value = v;
+        opt.textContent = v;
+        select.appendChild(opt);
+      });
+    }
+
+    function desenhar() {
+      const termo = document.getElementById("busca").value.toLowerCase();
+      const org = document.getElementById("filtroOrganismo").value;
+      const tipo = document.getElementById("filtroTipo").value;
+
+      const filtrados = estudos.filter(e =>
+        (!org || e.organismo === org) &&
+        (!tipo || e.tipo_projeto === tipo) &&
+        (!termo || [e.titulo, e.accession, e.missao].some(c => (c || "").toLowerCase().includes(termo)))
+      );
+
+      document.getElementById("lista").innerHTML = filtrados.map(e => `
+        <article class="card">
+          <h3>${escapeHtml(e.accession)}: ${escapeHtml(e.titulo)}</h3>
+          <p><strong>Organismo:</strong> ${escapeHtml(e.organismo)}</p>
+          <p><strong>Projeto:</strong> ${escapeHtml(e.tipo_projeto)}</p>
+          <p><strong>Missão:</strong> ${escapeHtml(e.missao || "não informada")}</p>
+          <p><strong>Publicação:</strong> ${escapeHtml(e.data_publicacao)}</p>
+          ${e.url ? `<p><a href="${escapeHtml(e.url)}" target="_blank" rel="noopener">Ver estudo na OSDR</a></p>` : ""}
+        </article>`).join("") || `<div class="card aviso">Nenhum estudo encontrado.</div>`;
+    }
+
+    async function carregar() {
+      try {
+        const [resEstudos, resExec] = await Promise.all([
+          fetch(`${SUPABASE_URL}/rest/v1/osdr_estudos?select=*&order=data_publicacao.desc.nullslast`, { headers: cabecalhos }),
+          fetch(`${SUPABASE_URL}/rest/v1/execucoes?select=finalizado_em,status&order=iniciado_em.desc&limit=1`, { headers: cabecalhos })
+        ]);
+        if (!resEstudos.ok) throw new Error(`HTTP ${resEstudos.status}`);
+        estudos = await resEstudos.json();
+
+        const ultima = resExec.ok ? (await resExec.json())[0] : null;
+        document.getElementById("atualizacao").textContent = ultima?.finalizado_em
+          ? `Última atualização: ${new Date(ultima.finalizado_em).toLocaleString("pt-BR")} (${ultima.status})`
+          : "Última atualização: não registrada";
+
+        document.getElementById("total").textContent = estudos.length;
+        document.getElementById("organismos").textContent = new Set(estudos.map(e => e.organismo).filter(Boolean)).size;
+        document.getElementById("tipos").textContent = new Set(estudos.map(e => e.tipo_projeto).filter(Boolean)).size;
+
+        preencherFiltro("filtroOrganismo", estudos.map(e => e.organismo));
+        preencherFiltro("filtroTipo", estudos.map(e => e.tipo_projeto));
+        desenhar();
+      } catch (erro) {
+        document.getElementById("lista").innerHTML = `<div class="card aviso">Erro ao carregar os dados: ${escapeHtml(erro.message)}</div>`;
+      }
+    }
+
+    ["busca", "filtroOrganismo", "filtroTipo"].forEach(id =>
+      document.getElementById(id).addEventListener("input", desenhar));
+    carregar();
+  </script>
+</body>
+</html>
